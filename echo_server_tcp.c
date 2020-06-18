@@ -1,11 +1,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
+#include <unistd.h>
+#include <string.h>
 
 #include <uv.h>
 #include "helpers.h"
 
 #define PORT 8000
+#define STDIN 0
+#define MAXLEN 512
 
 typedef struct {
     uv_write_t req;
@@ -136,9 +140,21 @@ static int tcp_echo_server() {
 }
 
 
-
-static void simple_timer_cb (uv_timer_t* timer, int status) {
+static void simple_timer_cb(uv_timer_t* timer, int status) {
     timer_c++;
+}
+
+static void simple_poll_cb(uv_poll_t* poll, int status, int events){
+    char buf[MAXLEN];
+    memset(buf, 0, MAXLEN);
+    read(0, buf, MAXLEN);
+    printf("%s",buf);
+}
+
+static void simple_poll(int fd){
+    uv_poll_t* poll = (uv_poll_t*) malloc(sizeof(uv_poll_t));
+    uv_poll_init(uv_default_loop(), poll, fd);
+    uv_poll_start(poll, UV_READABLE, (uv_poll_cb) &simple_poll_cb);
 }
 
 static void simple_timer(){
@@ -150,6 +166,7 @@ static void simple_timer(){
 int main() {
     tcp_echo_server();
     simple_timer();
+    simple_poll(STDIN);
     Uv_run_default();
 
     return 0;
