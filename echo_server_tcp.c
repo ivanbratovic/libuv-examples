@@ -70,7 +70,7 @@ static void after_read(uv_stream_t* handle,
 
     if (nread < 0) {
         /*assert(nread == UV_EOF);*/
-        fprintf(stderr, "Error reading: %s\n", uv_strerror(nread));
+        fprintf(stderr, "Client disconnect: %s\n", uv_strerror(nread));
 
         req = (uv_shutdown_t*) malloc(sizeof(*req));
         assert(req != NULL);
