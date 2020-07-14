@@ -163,11 +163,10 @@ static void simple_timer(){
     uv_timer_start(timer, (uv_timer_cb) &simple_timer_cb, 0, 1000);
 }
 
-int main() {
+int main(void){
     tcp_echo_server();
     simple_timer();
     simple_poll(STDIN);
     Uv_run_default();
-
     return 0;
 }
